@@ -7,18 +7,19 @@ class Crackle < Formula
   license "BSD-2-Clause"
   head "https://github.com/mikeryan/crackle.git"
 
-  # depends_on "cmake" => :build
+  depends_on "libpcap" => :build
   # wow this is pretty basic but I guess It'll do for now.
   def install
     # ENV.deparallelize  # if your formula fails when building in parallel
     # Remove unrecognized options if warned by configure
     # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
-
-    system "make", "CC=#{ENV.cc}", "PREFIX=#{prefix}", "INSTALL_DIR=#{prefix}/bin"
-    system "make", "install"
+    inreplace "Makefile", "$(DESTDIR)/$(PREFIX)/bin", "$(DESTDIR)/$(PREFIX)/bin"
+    system "make", "CC=#{ENV.cc}"
+    system "make", "install", "PREFIX=#{prefix}", "INSTALL_DIR=#{prefix}/bin"
   end
 
   test do
+    system "make", "test"
     # `test do` will create, run in and delete a temporary directory.
     #
     # This test will fail and we won't accept that! For Homebrew/homebrew-core
